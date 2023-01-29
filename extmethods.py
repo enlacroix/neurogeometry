@@ -1,6 +1,6 @@
-from entities import seg, Line, RLM, lines, circ_lines
+from entities import seg, Line, RLM
 import itertools as it
-from collections import Counter
+import varbank as vb
 
 
 def seg_index(X, Y):
@@ -37,13 +37,19 @@ def gen_predicates_dict(pure_predicates):
                 continue
     return d
 
+
 def add_string(database, lst):
     database.loc[len(database.index)] = lst
+
+def pprint_dict(my_dict):
+    print({str(x): y for x, y in zip(my_dict.keys(), my_dict.values())})
 
 def find_fact(df, fact_name):
     return df['Факт'][df['Факт'] == fact_name].index[0]
 
-def gen_comb(num, pure_points):  # [x for x in it.product(pure_points, repeat=num) if all([False for m in list(Counter(x).values()) if m > 2])]
+
+def gen_comb(num,
+             pure_points):  # [x for x in it.product(pure_points, repeat=num) if all([False for m in list(Counter(x).values()) if m > 2])]
     lst = [[y for y in it.permutations(x, len(x))] for x in it.combinations(pure_points, num)]
     return list(it.chain(*lst))
 
@@ -54,14 +60,16 @@ def transitive_predicates(pure_predicates):  # словарь сделан, но
             p[0] * p[1]
     # Для правильной работы col и cyl.
 
-    for ln in it.combinations(lines, 2): # Опасная фигня, но починил.
+    for ln in it.combinations(vb.lines, 2):  # Опасная фигня, но починил.
         ln[0].intersect(ln[1])
-    for ln in it.combinations(circ_lines, 2):
+    for ln in it.combinations(vb.circ_lines, 2):
         ln[0].intersect(ln[1])
     return 0
 
+
 def gen_only_right_perm(pr):
     return [pr.__class__(*y) for y in it.permutations(pr.lst) if pr.__class__(*y) == pr]
+
 
 def stringify(list):
     return ''.join(str_list(list))

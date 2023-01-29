@@ -1,13 +1,15 @@
 import numpy as np
+import predicates.freepred
+import varbank as vb
+from numerical import Sum
 
-circ_lines = []  # Массив "прямых", но только точек, принадлежащих одной окружности.
-lines = []  # Массив прямых (произвольное число точек)
 seg = []  # Массив отрезков (только две точки)
 RLM = np.zeros((len(seg), len(seg)))
 # relation_length_matrix. Возможно стоит поставить 100 на 100, чтобы не париться с IndexError.
 RAM = np.zeros((len(seg), len(seg)))
 pure_points = []
 processed = []
+
 class Point:
     def __init__(self, name):
         self.n = name
@@ -24,10 +26,14 @@ class Point:
     def __ne__(self, other):
         return not self.n == other.n
 
-
 class Line:
     def __init__(self, *lst):
         self.lst = lst
+        self.value = None
+        vb.lines.append(self)
+        predicates.freepred.col(*lst).confirm()
+        if len(lst) == 2:
+            vb.segments[self] = None
 
     def __str__(self):
         name = ''
@@ -35,6 +41,11 @@ class Line:
             if p is not None:
                 name += p.n
         return ''.join(sorted(name))
+
+    def set_value(self, value):
+        for key in vb.segments.keys():
+            if key == self:
+                vb.segments[key] = value
 
     def __eq__(self, other):
         return set(self.lst) == set(other.lst)
@@ -62,19 +73,18 @@ class Line:
     def intersect(self, other):
         eps = set(self.lst)
         phi = set(other.lst)
-        if len(eps & phi) > 1 and Line(*list(eps | phi)) not in lines:
+        if len(eps & phi) > 1 and Line(*list(eps | phi)) not in vb.lines:
             # lines.remove()
-            lines.append(Line(*list(eps | phi)))
+            vb.lines.append(Line(*list(eps | phi)))
             return 0
         elif len(eps & phi) == 1:
             return Point(str(*list(eps & phi)))  # Единственная точка пересечения двух прямых
 
 
 class CircleLine(Line):
-    global circ_lines
 
     def __init__(self, *lst):
-        super().__init__(*lst)
+        vb.circ_lines.append(CircleLine(*lst))
 
     def __hash__(self):
         res = hash(self.lst[0])
@@ -87,7 +97,7 @@ class CircleLine(Line):
         phi = set(other.lst)
         if len(eps & phi) > 2:
             # lines.remove()
-            circ_lines.append(CircleLine(*list(eps | phi)))
+            vb.circ_lines.append(CircleLine(*list(eps | phi)))
             return 0
 
             # Некоторые проблемы с хэшем, потому что родитель обрабатывает только первые две точки
@@ -99,29 +109,54 @@ class Angle:
         A, B, C, D = self.lst
         self.sgm = [Line(A, B), Line(C, D)]
         self.name = '∠[' + str(Line(A, B)) + ', ' + str(Line(C, D)) + ']'
+        if self not in vb.angle_list:
+            vb.angle_list.append(self)
 
     def __eq__(self, other):
         return isinstance(other, type(self)) and set(self.sgm) == set(other.sgm)
 
+    def numerical(self):
+        vb.angles[self] = None
+
     def __str__(self):
         return self.name
 
+    def get_ind(self):
+        return vb.angle_list.index(self)
+
+    def __ne__(self, other):
+        return not (self == other)
+
     def __hash__(self):
+        # hash(self.lst[0]) ^ hash(self.lst[1]) ^ hash(self.lst[2]) ^ hash(self.lst[3])
         return hash(self.sgm[0]) ^ hash(self.sgm[1])
 
-    # hash(self.lst[0]) ^ hash(self.lst[1]) ^ hash(self.lst[2]) ^ hash(self.lst[3])
+    def set_value(self, value):
+        vb.angles[self] = value
+        blank = [0] * vb.N
+        blank[self.get_ind()] = 1
+        # vb.AEV[vb.AEM.shape[0]][0] = value
+        vb.AEV = np.vstack([vb.AEV, np.array([value])])
+        vb.AEM = np.vstack([vb.AEM, np.array(blank)])
 
-    def value(self):
-        pass
-        # return 180 -
+    def get_value(self):
+        try:
+            return vb.angles[self]
+        except KeyError:
+            print('Запрошенный угол не был создан.')
+
+
+
 
 
 class Triangle:
     def __init__(self, *lst):
         self.lst = lst
         X, Y, Z = self.lst
-        self.sgm = [Line(X, Y), Line(X, Z), Line(Y, Z)]
-        self.name = f'Треугольник {X.n + Y.n + Z.n}'
+        self.segments = [Line(X, Y), Line(X, Z), Line(Y, Z)]
+        self.angles = [Angle(Y, Z, Y, X), Angle(X, Y, X, Z), Angle(X, Z, Y, Z)]
+        Sum(self.angles, 180)
+        self.name = f'треугольник {X.n + Y.n + Z.n}'
 
     def __str__(self):
         return self.name

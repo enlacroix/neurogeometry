@@ -1,9 +1,9 @@
 import time
-import statement as stm
-from solver import proof
+import varbank as stm
+from ng_solver.solver import proof
 import numpy as np
-from printer import print_proof
-from data_task import question, input_info
+from decoration.printer import print_proof
+from statement import question, input_info
 np.warnings.filterwarnings('ignore', category=np.VisibleDeprecationWarning)
 
 start_time = time.time()
