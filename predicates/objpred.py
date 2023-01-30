@@ -9,7 +9,7 @@ class eqa(Predicate):
         super().__init__(*lst)
         A, B, C, D, E, F, G, H = lst
         self.sgm = [Angle(A, B, C, D), Angle(E, F, G, H)]
-        nm.Relation(self.sgm[0], self.sgm[1], 1)
+        #nm.Relation(self.sgm[0], self.sgm[1], 1)
         self.ttl = 'eqa'
         self.name = self.ttl + self.name
         self.bool = self in stm.predicates

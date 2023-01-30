@@ -1,6 +1,7 @@
 from predicates.predmain import Predicate
 import varbank as vb
 
+
 def chaos_bool(lst, flg):
     if flg == 'col':
         if lst[0] == lst[1]:  # col (X, X) будет считаться False

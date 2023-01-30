@@ -30,10 +30,9 @@ class Line:
     def __init__(self, *lst):
         self.lst = lst
         self.value = None
-        vb.lines.append(self)
-        predicates.freepred.col(*lst).confirm()
-        if len(lst) == 2:
-            vb.segments[self] = None
+        if self not in vb.lines:
+            vb.lines.append(self)
+
 
     def __str__(self):
         name = ''

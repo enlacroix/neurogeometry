@@ -15,6 +15,6 @@ input_info = [col(A, B), col(B, C), col(D, C), col(A, D), col(M, C), mdp(M, A, D
 stm.points = [A, B, C, M, D, F, K, H, P]
 for pred in input_info:
     pred.confirm()
-    add_string(stm.df, [None, 'это указано в условии.', None, None, pred])
+    add_string(stm.df, [None, 'по условию.', None, None, pred])
 
 question = mdp(F, M, K)

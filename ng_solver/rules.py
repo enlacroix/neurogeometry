@@ -91,6 +91,7 @@ def R5(a, b):
         c, d = b, a
     else:
         return 0
+    #print('R5')
     for x in gen_only_right_perm(c):
         for y in gen_only_right_perm(d):
             if x[2] == y[3] and x[1] == y[1] and x[0] != y[0]:
@@ -161,6 +162,7 @@ def R8(a, b):
 
 def R9(a, b, c):
     if [a.ttl, b.ttl, c.ttl].count('prl') == 2 and [a.ttl, b.ttl, c.ttl].count('mdp') == 1:  # АЛЯРМ
+        #print('R9')
         cost = [0]*3
         i = 1
         for elem in [a, b, c]:
@@ -175,7 +177,6 @@ def R9(a, b, c):
                     if x.lst[1] == y.lst[0] == z.lst[0] and x.lst[2] == y.lst[2] == z.lst[2]:
                         A, B, C, D, M = x.lst[1], x.lst[2], y.lst[1], y.lst[3], x.lst[0]
                         premises = [mdp(M, A, B), prl(A, C, B, D), prl(A, D, B, C)]
-
                         if mdp(M, C, D).confirm():
                             add_string(stm.df, ['свойство диагоналей параллелограмма',
                                                 f'если в четырёхугольнике две пары противоположных сторон попарно параллельны,' 

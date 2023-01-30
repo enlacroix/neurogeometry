@@ -22,7 +22,7 @@ st.sidebar.write('1.071446180343628 секунд')
 state = st.text_area('Введите предикатную форму условия задачи',
                      value='[col(A, B), col(B, C), col(D, C), col(A, D), col(M, C), mdp(M, A, D), mdp(K, B, C), mdp(H, D, C), mdp(P, A, B),mdp(F, P, H), col(M, F, K)]')
 if st.checkbox('Справочник по предикатам'):
-    f = open('resourses/book.txt', 'r', encoding="utf-8")
+    f = open('resources/book.txt', 'r', encoding="utf-8")
     lines = f.readlines()
     for line in lines:
         st.write(line)
@@ -35,7 +35,7 @@ for pred in input_info:
 question = eval(question)
 if st.button('Решить'):
     time.sleep(1)
-    f1 = open('resourses/book2.txt', 'r', encoding="utf-8")
+    f1 = open('resources/book2.txt', 'r', encoding="utf-8")
     lines1 = f1.readlines()
     st.header('Решение')
     tab0, tab1 = st.tabs(["Рекомендации", "Подробное доказательство"])

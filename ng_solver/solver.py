@@ -6,28 +6,28 @@ import varbank as stm
 import itertools as it
 
 
-
 def proof(question, prev_predicates, prev_size):
+    i = 1
     while True:
         for r in Rules:
+            #print(f'правило {i}')
             # хотя бы один предикат из связки ДОЛЖЕН БЫТЬ  свежим
             for predcomb in it.combinations(stm.predicates, len(signature(r).parameters)):
-                if any([u not in prev_predicates for u in predcomb]): # Этот пункт спасает полное исследование, снижая время в два раза.
+                if any([u not in prev_predicates for u in predcomb]):  # Этот пункт спасает полное исследование, снижая время в два раза.
                     r(*predcomb)
             transitive_predicates(stm.predicates)
+            #i += 1
+            #print(str_list(stm.lines))
+        #print('перебор правил завершен')
+        #print(f'{prev_size}, {len(stm.predicates)}')
         if prev_size == len(stm.predicates) or (prm.only_question and question):
             break
         else:
             prev_size = len(stm.predicates)
             prev_predicates = stm.predicates
     print(str_list(stm.predicates))
-    stm.df.to_csv('geom.csv', encoding='utf-8')
+    stm.df.to_csv('resources/geom.csv', encoding='utf-8')
     return 0
-
-
-
-
-
 
 
 '''
