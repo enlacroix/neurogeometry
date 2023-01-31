@@ -1,7 +1,7 @@
 from predicates.freepred import col
 from predicates.fixpred import mdp
 from predicates.quadpred import eql, ort, prl
-from predicates.objpred import eqa
+from predicates.entpred import eqa
 from extmethods import gen_only_right_perm, add_string, find_fact
 import varbank as stm
 
@@ -152,7 +152,7 @@ def R8(a, b):
         A, B, C, D, P, Q = c[0], c[1], c[2], c[3], d[0], d[1]
         premises = [prl(A, B, C, D)]
         if eqa(A, B, P, Q, C, D, P, Q).confirm():
-            add_string(stm.df, ['обратное свойство средней линии',
+            add_string(stm.df, ['свойство параллельных прямых',
                                f'Ввиду параллельности {A.n+B.n} и {C.n+D.n}, углы между {P.n+Q.n} и этими прямыми равны.',
                                 premises, [find_fact(stm.df, premises[0])],
                                 eqa(A, B, P, Q, C, D, P, Q)])

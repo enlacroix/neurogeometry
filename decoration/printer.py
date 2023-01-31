@@ -1,9 +1,9 @@
 import varbank as stm
 from random import choice
-from extmethods import find_fact
+from extmethods import find_fact, send
 import config as prm
 
-funny_phrases = ['Очевидно. ', 'Нетрудно заметить, что ', 'Легко видеть: ', 'Каждый школьник знает, что ']
+funny_phrases = ['Очевидно. ', 'Нетрудно заметить, что ', 'Легко видеть: ', 'Каждый советский школьник знал, что ']
 
 
 def get_premises(index):
@@ -25,9 +25,6 @@ def get_fact(index):
     return stm.df['Факт'][index].humanize()
 
 
-def send(string):
-    # Функция отправки сообщений. Поменяй print на функцию вывода на экран приложения.
-    print(string)
 
 
 printed = []
@@ -39,15 +36,15 @@ def f(node):
             send(get_description(child))
             continue
         elif child not in printed:
-            send(f'Докажем, что {get_fact(child)}, используя {get_rule(child)}:')
+            send(f'  Докажем, что {get_fact(child)}, используя {get_rule(child)}:')
             printed.append(child)
             f(child)
     send(get_description(node))
     return 0
 
 
-def print_proof(question):
+def generate_proof_text(question):
     start = find_fact(stm.df, question)
-    send(f'Докажем, что {question.humanize()}, используя {get_rule(start)}.')
+    send(f'1. Докажем, что {question.humanize()}, используя {get_rule(start)}.')
     f(start)
     send('Что и требовалось доказать.')

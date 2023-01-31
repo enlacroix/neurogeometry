@@ -11,8 +11,10 @@ def seg_index(X, Y):
 
 
 def send(string):  # Функция, которая будет выводить факт пользователю, в случае успешного применения.
-    print(string)
+    vb.to_print.append(string)
 
+def show_all():
+    return '\n'.join(vb.to_print)
 
 # потенциально, если мы вызваем метод для Line с тремя точками и больше, то он выведет сумму отрезков? Но measure устанавливает однозначную длину!
 def measure(name, value):

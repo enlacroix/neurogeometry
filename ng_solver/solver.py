@@ -25,7 +25,7 @@ def proof(question, prev_predicates, prev_size):
         else:
             prev_size = len(stm.predicates)
             prev_predicates = stm.predicates
-    print(str_list(stm.predicates))
+    #print(str_list(stm.predicates))
     stm.df.to_csv('resources/geom.csv', encoding='utf-8')
     return 0
 

@@ -1,5 +1,4 @@
 import numpy as np
-import predicates.freepred
 import varbank as vb
 from numerical import Sum
 
@@ -7,12 +6,16 @@ seg = []  # Массив отрезков (только две точки)
 RLM = np.zeros((len(seg), len(seg)))
 # relation_length_matrix. Возможно стоит поставить 100 на 100, чтобы не париться с IndexError.
 RAM = np.zeros((len(seg), len(seg)))
-pure_points = []
+
 processed = []
+
 
 class Point:
     def __init__(self, name):
         self.n = name
+        # TODO может быть из этого сделать множество? чтобы не проверять на отсуствие элемента каждый раз
+        if self not in vb.points:
+            vb.points.append(self)
 
     def __str__(self):
         return self.n
@@ -26,13 +29,13 @@ class Point:
     def __ne__(self, other):
         return not self.n == other.n
 
+
 class Line:
     def __init__(self, *lst):
         self.lst = lst
         self.value = None
         if self not in vb.lines:
             vb.lines.append(self)
-
 
     def __str__(self):
         name = ''
@@ -143,9 +146,6 @@ class Angle:
             return vb.angles[self]
         except KeyError:
             print('Запрошенный угол не был создан.')
-
-
-
 
 
 class Triangle:
