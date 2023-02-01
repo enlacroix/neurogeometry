@@ -1,11 +1,11 @@
 from predicates.predmain import Predicate
-from extmethods import seg_index
 from predicates.quadpred import eql
 from predicates.freepred import col
-from entities import Line, RLM, CircleLine
-import varbank as stm
+from entities import Line, Curve
+import varbank as vb
 
-class mdp(Predicate):  # должен добавлять предикат eql о равенстве отрезков
+
+class mdp(Predicate):
     def __init__(self, *points):
         super().__init__(*points)
         self.lst = points
@@ -13,7 +13,7 @@ class mdp(Predicate):  # должен добавлять предикат eql о
         self.ttl = 'mdp'
         self.sgm = [Z, Line(X, Y)]
         self.name = self.ttl + self.name
-        self.bool = self in stm.predicates
+        self.bool = self in vb.task.predicates
         if self.bool:
             eql(X, Z, Y, Z).confirm()
             col(Z, X, Y).confirm()
@@ -21,16 +21,17 @@ class mdp(Predicate):  # должен добавлять предикат eql о
     def __eq__(self, other):
         return isinstance(other, mdp) and set(self.sgm) == set(other.sgm)
 
-    def count(self):
-        Z, X, Y = self.lst
-        a = seg_index(X, Y)
-        b = seg_index(Y, Z)
-        c = seg_index(X, Z)
-        if a is not None and b is not None and c is not None and self.bool:
-            RLM[a][b] = 2
-            RLM[a][c] = 2
-            RLM[b][a] = 1 / 2  # RLM[i][j] = 1 / RLM [j][i], where i != j.
-            RLM[c][a] = 1 / 2
+    # TODO mdp передает данные в вычислительную матрицу.
+    # def count(self):
+    #     Z, X, Y = self.lst
+    #     a = seg_index(X, Y)
+    #     b = seg_index(Y, Z)
+    #     c = seg_index(X, Z)
+    #     if a is not None and b is not None and c is not None and self.bool:
+    #         RLM[a][b] = 2
+    #         RLM[a][c] = 2
+    #         RLM[b][a] = 1 / 2  # RLM[i][j] = 1 / RLM [j][i], where i != j.
+    #         RLM[c][a] = 1 / 2
 
     def __hash__(self):
         return hash(self.name)
@@ -42,14 +43,13 @@ class mdp(Predicate):  # должен добавлять предикат eql о
         return 0
 
 
-
 class cir(Predicate):  # Это предикат или элемент чертежа? Вот в чем вопрос.
     def __init__(self, *lst):
         super().__init__(*lst)
         self.ttl = 'cir'
         self.name = self.ttl + self.name
-        self.sgm = [lst[0], CircleLine(*lst[1:])]
-        self.bool = self in stm.predicates
+        self.sgm = [lst[0], Curve(*lst[1:])]
+        self.bool = self in vb.task.predicates
 
     def __eq__(self, other):
         return isinstance(other, type(self)) and set(self.sgm) == set(other.sgm)

@@ -1,6 +1,6 @@
 from predicates.predmain import Predicate
 from entities import Angle
-import varbank as stm
+import varbank as vb
 import numerical as nm
 
 
@@ -11,7 +11,7 @@ class eqa(Predicate):
         self.sgm = [Angle(A, B, C, D), Angle(E, F, G, H)]
         self.ttl = 'eqa'
         self.name = self.ttl + self.name
-        self.bool = self in stm.predicates
+        self.bool = self in vb.task.predicates
         # nm.Relation(self.sgm[0], self.sgm[1], 1)
 
     def __eq__(self, other):
@@ -29,3 +29,6 @@ class eqa(Predicate):
                 return 1
         else:
             return 0
+
+    def humanize(self):
+        return f'{self.sgm[0]} = {self.sgm[1]}'

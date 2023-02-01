@@ -5,8 +5,8 @@ import numpy as np
 from sympy import Matrix
 
 import entities as ent
-import extmethods
-from extmethods import pprint_dict
+import external
+from external import pprint_dict
 from numerical import Relation
 from predicates.freepred import col
 
@@ -30,7 +30,7 @@ from predicates.freepred import col
 #     '''
 from predicates.entpred import eqa
 from predicates.quadpred import prl
-import varbank as vb
+from varbank import task
 
 '''
 Задача: Дан треугольник АВС. Проведена прямая МВ. Угол ВАС - 20 градусов, <MBC = 60 градусов, угол АСВ в три раза больше чем угол А. 
@@ -54,7 +54,7 @@ Relation(ent.Angle(A, C, C, B), ent.Angle(B, A, A, C), 3)
 # print(extmethods.str_list(vb.angle_list))
 # print(vb.AEM)
 # print(vb.AEV)
-pprint_dict(vb.angles)
+pprint_dict(task.angles)
 T = Matrix([[1, 1, 1, 0, 0, 180],
             [0, 1, 0, 0, 0, 20],
             [0, 0, 0, 1, 0, 60],
@@ -63,8 +63,8 @@ T = Matrix([[1, 1, 1, 0, 0, 180],
 X = T.rref()[0]
 res = []
 for i in T.rref()[1]:
-    vb.angles[vb.angle_list[i]] = X.col(-1)[i]
-pprint_dict(vb.angles)
+    task.angle_dict[task.angle_dict[i]] = X.col(-1)[i]
+pprint_dict(task.angle_dict)
 # A = Matrix([[1, 1, 1, 0, 0],
 #             [0, 1, 0, 0, 0],
 #             [0, 0, 0, 1, 0],
