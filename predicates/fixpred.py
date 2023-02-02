@@ -1,3 +1,4 @@
+from decoration.printer import add_string, find_fact
 from predicates.predmain import Predicate
 from predicates.quadpred import eql
 from predicates.freepred import col
@@ -15,7 +16,10 @@ class mdp(Predicate):
         self.name = self.ttl + self.name
         self.bool = self in vb.task.predicates
         if self.bool:
-            eql(X, Z, Y, Z).confirm()
+            pred = eql(X, Z, Y, Z)
+            if pred.confirm():
+                # 'Правило', 'Описание', 'Предпосылки', 'Указатели на предпосылки', 'Факт'
+                add_string(['Свойство середины', 'точка делит отрезок пополам', [self], [find_fact(self)], pred])
             col(Z, X, Y).confirm()
 
     def __eq__(self, other):

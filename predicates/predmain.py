@@ -1,6 +1,8 @@
 import varbank as vb
 import itertools as it
 
+from decoration.printer import add_string
+
 
 class Predicate:
     def __init__(self, *points):

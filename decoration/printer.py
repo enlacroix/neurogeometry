@@ -6,7 +6,10 @@ funny_phrases = ['Очевидно. ', 'Нетрудно заметить, чт�
 
 
 def get_premises(index):
-    return vb.task.df['Указатели на предпосылки'][index]
+    try:
+        return vb.task.df['Указатели на предпосылки'][index]
+    except KeyError:
+        return 'Ошибка! Указатели не удалось получить'
 
 
 def send(string):
@@ -20,30 +23,40 @@ def send(string):
 
 def get_description(index):
     """
-    50% - шанс выпадения "смешной" фразы.
+    40% - шанс выпадения "смешной" фразы.
     :param index:
     :return:
     """
     fin = vb.task.df['Факт'][index].humanize() + ', поскольку ' + vb.task.df['Описание'][index]
-    if randint(1, 100) <= 50 and cf.fun:
+    if cf.fun and randint(1, 100) <= 40:
         return choice(funny_phrases) + fin
     return fin
 
 
 def get_rule(index):
-    return vb.task.df['Правило'][index]
+    try:
+        return vb.task.df['Правило'][index]
+    except KeyError:
+        print('Правило не найдено!')
 
 
 def get_fact(index):
-    return vb.task.df['Факт'][index].humanize()
+    try:
+        return vb.task.df['Факт'][index].humanize()
+    except KeyError:
+        return 'Ошибка! Имя теоремы не удалось получить. '
 
 
 def add_string(lst):
+    # 'Правило', 'Описание', 'Предпосылки', 'Указатели на предпосылки', 'Факт'
     vb.task.df.loc[len(vb.task.df.index)] = lst
 
 
 def find_fact(fact_name):
-    return vb.task.df['Факт'][vb.task.df['Факт'] == fact_name].index[0]
+    try:
+        return vb.task.df['Факт'][vb.task.df['Факт'] == fact_name].index[0]
+    except IndexError:
+        print(f'{fact_name.humanize()} не найден!')
 
 
 printed = []

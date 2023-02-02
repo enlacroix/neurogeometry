@@ -1,6 +1,6 @@
-import numpy as np
 import varbank as vb
-#from numerical import Sum
+from external import stringify_list, str_list
+from numerical.functors import Sum
 
 
 class Point:
@@ -69,13 +69,13 @@ class Line:
         """
         eps = set(self.lst)
         phi = set(other.lst)
-        if len(eps & phi) > 1 and Line(*list(eps | phi)) not in vb.task.lines:
+        if len(eps & phi) > 1:
             vb.task.lines.remove(self)
             vb.task.lines.remove(other)
             # TODO убрать self и other, поскольку они уже не несут полезной информации.
             # Это закомментировано, поскольку неизвестно, как lines будет применяться для вычислительного модуля.
             # Удаление может нарушить порядок индексов.
-            vb.task.lines.append(Line(*list(eps | phi)))
+            Line(*list(eps | phi))  # Всякий раз, когда мы инициализируем линию, то она УЖЕ добавляется в список.
             return 0
         elif len(eps & phi) == 1:
             return Point(str(*list(eps & phi)))  # Единственная точка пересечения двух прямых
@@ -112,9 +112,6 @@ class Curve(Line):
             # Некоторые проблемы с хэшем, потому что родитель обрабатывает только первые две точки
 
 
-
-
-
 class Angle:
     def __init__(self, *lst):
         self.lst = lst
@@ -130,6 +127,17 @@ class Angle:
     def numerical(self):
         vb.task.angle_dict[self] = None
 
+    def humanize(self):
+        eps = set(self.sgm[0].lst)
+        phi = set(self.sgm[1].lst)
+        if len(list(eps & phi)) > 0:
+            a = list(eps-phi)[0]
+            b = list(eps & phi)[0]
+            c = list(phi-eps)[0]
+            return '∠' + a.n + b.n + c.n
+        else:
+            return self.name
+
     def __str__(self):
         return self.name
 
@@ -143,20 +151,12 @@ class Angle:
         # hash(self.lst[0]) ^ hash(self.lst[1]) ^ hash(self.lst[2]) ^ hash(self.lst[3])
         return hash(self.sgm[0]) ^ hash(self.sgm[1])
 
-    def set_value(self, value):
-
-        vb.task.angle_dict[self] = value
-        blank = [0] * vb.N_
-        blank[self.get_ind()] = 1
-        # vb.AEV[vb.AEM.shape[0]][0] = value
-        vb.task.AEV = np.vstack([vb.task.AEV, np.array([value])])
-        vb.task.AEM = np.vstack([vb.task.AEM, np.array(blank)])
-
     def get_value(self):
         try:
             return vb.task.angle_dict[self]
         except KeyError:
             print('Запрошенный угол не был создан.')
+            return None
 
 
 class Triangle:
@@ -164,12 +164,19 @@ class Triangle:
         self.lst = lst
         X, Y, Z = self.lst
         self.segments = [Line(X, Y), Line(X, Z), Line(Y, Z)]
-        self.angles = [Angle(Y, Z, Y, X), Angle(X, Y, X, Z), Angle(X, Z, Y, Z)]
-        #Sum(self.angles, 180)
-        self.name = f'треугольник {X.n + Y.n + Z.n}'
+        self.angles = [Angle(X, Y, X, Z), Angle(X, Z, Y, Z), Angle(Y, Z, Y, X)]
+        Sum(self.angles, 180)
+        self.name = f'Треугольник {X.n + Y.n + Z.n}'
+        # TODO Инициализация col от Line. Вызывает циркулярный импорт. Поправить, иначе смысла в Triangle немного
+        # col(X, Y).confirm()
+        # col(X, Z).confirm()
+        # col(Z, Y).confirm()
 
     def __str__(self):
         return self.name
+
+    def __hash__(self):
+        return hash(self.segments[0]) ^ hash(self.segments[1]) ^ hash(self.segments[2])
 
     def __eq__(self, other):
         return set(self.lst) == set(other.lst)  # set(self.sgm) == set(other.sgm)

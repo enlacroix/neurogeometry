@@ -1,17 +1,17 @@
 from decoration.printer import add_string
-from entities import Point, Triangle
+from entities import Point, Triangle, Angle
 from external import str_list
+from numerical.functors import SetValue, Sum, Relation
 import varbank as vb
+from predicates.predmain import Predicate
+
 '''
 Мы импортируем все модули предикатов, чтобы eval их корректно распознал.
 '''
-from predicates.freepred import col
+from predicates.freepred import col, cyl
 from predicates.fixpred import mdp
 from predicates.quadpred import eql, ort, prl
-from predicates.entpred import eqa
-
-
-
+from predicates.entpred import eqa, ctr, etr
 
 
 def reading_points(string: str):
@@ -29,7 +29,7 @@ def reading_points(string: str):
 # TODO Жуткий кошмарный костыль.
 # Пользователю нужный каждый раз залезать в файл, чтобы добавить/убрать точки. Либо иниц весь английский алфавит (у нас же нет перебора точек больше)
 # может ли и здесь помочь eval?
-A, B, C, D, M, F, K, H, P = reading_points('A, B, C, D, M, F, K, H, P')
+A, B, C, D, E, M, F, K, H, P = reading_points('A, B, C, D, E, M, F, K, H, P')
 
 
 def read_task(predicates_listing, question_str):
@@ -39,16 +39,16 @@ def read_task(predicates_listing, question_str):
     :param question_str: вопрос в строковой форме.
     :return:
     """
-    # Не подходит для считывания объектов типа Triangle и Relation
     for pred_name in predicates_listing.split('; '):
         try:
-            vb.task.statement.append(eval(pred_name))
+            pred = eval(pred_name)
         except NameError:
             print(f'Внимание! Имя {pred_name} некорректно и не было обработано!')
             continue
-        pred = vb.task.statement[-1]
-        pred.confirm()
-        add_string([None, 'это известно из условия.', None, None, pred])
+        if isinstance(pred, Predicate):
+            vb.task.statement.append(pred)
+            pred.confirm()
+            add_string([None, 'это известно из условия.', None, None, pred])
     vb.task.question = eval(question_str)
 
 
@@ -60,10 +60,10 @@ def read_task(predicates_listing, question_str):
 '''
 
 # 1. Инициализация точек.
-# 2. TODO Распознавание геометрических объектов (e.g. треугольник, ent.Triangle)
+# 2. Распознавание геометрических объектов (e.g. треугольник, Triangle)
 # 3. Инициализация предикатов
-# 4. TODO Ввод численных значений.
-# 5. TODO Ввод численных отношений между значениями.
+# 4. Ввод численных значений.
+# 5. Ввод численных отношений между значениями.
 
 # input_info = [col(A, B), col(B, C), col(D, C), col(A, D), col(M, C), mdp(M, A, D), mdp(K, B, C), mdp(H, D, C),
 #               mdp(P, A, B), mdp(F, P, H), col(M, F, K)]

@@ -1,9 +1,9 @@
 from decoration.printer import add_string, find_fact
+from external import str_list
 from predicates.freepred import col
 from predicates.fixpred import mdp
 from predicates.quadpred import eql, ort, prl
 from predicates.entpred import eqa
-import varbank as vb
 
 # ['Правило', 'Описание', 'Предпосылки', 'Указатели на предпосылки', 'Факт', 'Указатели на выводы']
 
@@ -22,6 +22,7 @@ def R1(a, b):
                 premises = [mdp(Z, X, Y), eql(W, Z, Z, X)]
 
                 if ort(X, W, W, Y).confirm():
+                    print(f'R1 успешно применено на предикатах {str_list(premises)}!')
                     add_string(['признак прямоугольного треугольнике по медиане',
                                         f'если медиана ({W.n + Z.n}), проведенная к стороне ({X.n + Y.n}) равна половине длины этой стороны,'
                  f' то треугольник {X.n + Y.n + W.n} - прямоугольный с прямым углом ∠[{X.n + W.n}, {Y.n + W.n}].',
@@ -43,8 +44,9 @@ def R2(a, b):
                 premises = [mdp(Z, X, Y), ort(X, W, W, Y)]
 
                 if eql(W, Z, Z, X).confirm():
+                    print(f'R2 успешно применено на предикатах {str_list(premises)}!')
                     add_string(['свойство медианы, проведенной к гипотенузе',
-                                        f'Медиана {W.n + Z.n}, проведенная к гипотенузе {X.n + Y.n} в прямоугольном треугольнике равна половине её длины.',
+                                        f'медиана {W.n + Z.n}, проведенная к гипотенузе {X.n + Y.n} в прямоугольном треугольнике равна половине её длины.',
                                         premises, [find_fact(premises[0]), find_fact(premises[1])],
                                         eql(W, Z, Z, X)])
                     return 1
@@ -63,8 +65,9 @@ def R3(a, b):
                 premises = [prl(A, B, C, D), ort(C, D, E, F)]
 
                 if ort(A, B, E, F).confirm():
+                    print(f'R3 успешно применено на предикатах {str_list(premises)}!')
                     add_string(['аксиома перепендикулярности',
-                                        f'Прямая {C.n + D.n} параллельна {A.n + B.n} и перпендикулярна {E.n + F.n}. Из этого следует, что {A.n + B.n} ортогональна {E.n + F.n}.',
+                                        f'прямая {C.n + D.n} параллельна {A.n + B.n} и перпендикулярна {E.n + F.n}. Из этого следует, что {A.n + B.n} ортогональна {E.n + F.n}.',
                                         premises, [find_fact(premises[0]), find_fact(premises[1])],
                                         ort(A, B, E, F)])
                     return 1
@@ -78,6 +81,7 @@ def R4(a, b):
                     premises = [mdp(E, A, B), mdp(F, A, C)]
 
                     if prl(E, F, B, C).confirm():
+                        print(f'R4 успешно применено на предикатах {str_list(premises)}!')
                         add_string(['свойство средней линии',
                                             f'отрезок, соединяющий точки {E.n} и {F.n}, является средней линией и параллелен стороне {B.n + C.n}.',
                                             premises, [find_fact(premises[0]), find_fact(premises[1])], prl(E, F, B, C)])
@@ -91,7 +95,6 @@ def R5(a, b):
         c, d = b, a
     else:
         return 0
-    #print('R5')
     for x in c.synonyms():
         for y in d.synonyms():
             if x[2] == y[3] and x[1] == y[1] and x[0] != y[0]:
@@ -99,6 +102,7 @@ def R5(a, b):
                 premises = [mdp(M, A, B), eql(O, A, O, B)]
 
                 if ort(O, M, A, B).confirm():
+                    print(f'R5 успешно применено на предикатах {str_list(premises)}!')
                     add_string(['свойство медианы, проведенной к основанию в р/б треугольнике',
                                         f'медиана {O.n+M.n} в равнобедренном треугольнике {O.n+A.n+B.n}, проведенная к основанию, является и высотой.',
                                         premises, [find_fact(premises[0]), find_fact(premises[1])],
@@ -120,8 +124,9 @@ def R6(a, b):
                     continue
                 premises = [mdp(E, A, B), prl(E, F, B, C), col(F, A, C)]
                 if mdp(F, A, C).confirm():
+                    print(f'R6 успешно применено на предикатах {str_list(premises)}!')
                     add_string(['обратное свойство средней линии',
-                                        f'Линия {E.n+F.n} ∥ {B.n+C.n} и проходит через точку {E.n}, которая является серединой {A.n+B.n}, то точка {F.n} также является серединой {A.n+C.n}',
+                                        f'линия {E.n+F.n} ∥ {B.n+C.n} и проходит через точку {E.n}, которая является серединой {A.n+B.n}, то точка {F.n} также является серединой {A.n+C.n}',
                                         premises, [find_fact(premises[0]), find_fact(premises[1])],
                                         mdp(F, A, C)])
                     return 1
@@ -133,8 +138,9 @@ def R7(a):
                 A, B, P, Q, C, D = x[0], x[1], x[2], x[3], x[4], x[5]
                 premises = [eqa(A, B, P, Q, C, D, P, Q)]
                 if prl(A, B, C, D).confirm():
+                    print(f'R7 успешно применено на предикатах {str_list(premises)}!')
                     add_string(['признак параллельности по равным углам',
-                                       f'Линии {A.n+B.n} и {C.n+D.n} образуют одинаковый угол с {P.n+Q.n}, поэтому они параллельны.',
+                                       f'линии {A.n+B.n} и {C.n+D.n} образуют одинаковый угол с {P.n+Q.n}, поэтому они параллельны.',
                                         premises, [find_fact(premises[0])],
                                         prl(A, B, C, D)])
                     return 1
@@ -152,8 +158,9 @@ def R8(a, b):
         A, B, C, D, P, Q = c[0], c[1], c[2], c[3], d[0], d[1]
         premises = [prl(A, B, C, D)]
         if eqa(A, B, P, Q, C, D, P, Q).confirm():
+            print(f'R8 успешно применено на предикатах {str_list(premises)}!')
             add_string(['свойство параллельных прямых',
-                               f'Ввиду параллельности {A.n+B.n} и {C.n+D.n}, углы между {P.n+Q.n} и этими прямыми равны.',
+                               f'ввиду параллельности {A.n+B.n} и {C.n+D.n}, углы между {P.n+Q.n} и этими прямыми равны.',
                                 premises, [find_fact(premises[0])],
                                 eqa(A, B, P, Q, C, D, P, Q)])
             return 1
@@ -162,7 +169,6 @@ def R8(a, b):
 
 def R9(a, b, c):
     if [a.ttl, b.ttl, c.ttl].count('prl') == 2 and [a.ttl, b.ttl, c.ttl].count('mdp') == 1:  # АЛЯРМ
-        #print('R9')
         cost = [0]*3
         i = 1
         for elem in [a, b, c]:
@@ -178,6 +184,7 @@ def R9(a, b, c):
                         A, B, C, D, M = x.lst[1], x.lst[2], y.lst[1], y.lst[3], x.lst[0]
                         premises = [mdp(M, A, B), prl(A, C, B, D), prl(A, D, B, C)]
                         if mdp(M, C, D).confirm():
+                            print(f'R9 успешно применено на предикатах {str_list(premises)}!')
                             add_string(['свойство диагоналей параллелограмма',
                                                 f'если в четырёхугольнике две пары противоположных сторон попарно параллельны,' 
                                                 f' и одна из диагоналей точкой пересечения {M.n} делятся пополам, то и вторая диагональ тоже. ',

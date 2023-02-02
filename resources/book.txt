@@ -7,4 +7,5 @@ prl(A, B, C, D): AB параллелен CD.
 eql(A, B, C, D): AB = CD.
 ort(A, B, C, D): AB перпендикулярен CD.
 eqa(A, B, C, D, P, Q, F, H): ∠[AB, CD] = ∠[PQ, FH], равенство углов.
-ctr(A, B, C, D, P, Q): равные треугольники ABC и DPQ.  
+etr(A, B, C, D, P, Q): равные треугольники ABC и DPQ.  
+str(A, B, C, D, P, Q): подобные треугольники. 

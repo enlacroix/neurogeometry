@@ -1,3 +1,4 @@
+from decoration.printer import get_proof_text
 from external import str_list, hum_list
 from ng_solver.rules import Rules
 from inspect import signature
@@ -6,7 +7,8 @@ import varbank as vb
 import itertools as it
 
 # TODO print() заменить на log(), функция, отмечающая технические моменты, которые можно запросить с веб-приложения. Но это не точно.
-
+from numerical.numodule import evaluate_angles
+from statement import read_task
 
 
 def proof():
@@ -20,19 +22,20 @@ def proof():
     rnd = 1
     prev_size = len(vb.task.statement)
     while True:
+        evaluate_angles()
         for i, R in enumerate(Rules):
-            print(f'Идёт обработка правила {i}...')
+            print(f'Идёт обработка правила {i + 1}...')
             for predcomb in it.combinations(vb.task.predicates, len(signature(R).parameters)):
                 # Хотя бы один предикат из комбинации должен быть получен на предыдущей итерации, иначе эта комбинация предикатов не рассматривается.
                 # Этот пункт спасает полное исследование, снижая время в два раза.
                 if any([u not in prev_predicates for u in predcomb]):
-                    R(*predcomb)
+                    if R(*predcomb):  # если успешно сработало, то возвращается 1.
+                        print('Предикаты:\n', str_list(vb.task.predicates))
             vb.task.post_processing()
-            # print(str_list(task.lines)) str_list(task.angles) потом
-            #print('Предикаты:\n', str_list(vb.task.predicates))
         print(f'Итерация {rnd} завершена.')
         rnd += 1
-        print(f'Размер предикатного массива. Предыдущая итерация: {prev_size}, Текущая: {len(vb.task.predicates)}, Прирост: {len(vb.task.predicates) - prev_size}')
+        print(
+            f'Размер предикатного массива. Предыдущая итерация: {prev_size}, Текущая: {len(vb.task.predicates)}, Прирост: {len(vb.task.predicates) - prev_size}')
         if prev_size == len(vb.task.predicates) or (cf.only_question and vb.task.question) or rnd > cf.supremum:
             print('Формирование датафрейма завершено.')
             break
@@ -43,4 +46,21 @@ def proof():
     return 0
 
 
-
+def run_solver(text: list) -> str:
+    """
+    Верховная функция, королева бала, пик этого айсберга, которая всё и запускает.
+    :param text: text подаётся как список из двух элементов, содержащих условие (первый) и вопрос (второй) в предикатной форме.
+    :return: текст решения единой строкой.
+    """
+    # Создаем "пустой" новый объект класса Task, когда запускаем процесс решения.
+    vb.task = vb.Task()  # TODO Сюда бы отдельный метод для создания и обнуления списков, поскольку у меня нервный тик от скрытой инициализации Task(), которая очищает
+    # датафреймы и предикаты. Пусть в __init__ лежит что-то незначительное.
+    # Переводим условие на предикатный язык.
+    statement, question = text
+    read_task(statement, question)
+    # Функция, формирующая дедуктивный датафрейм.
+    proof()
+    # Генерируем текст доказательства, используем функцию из модуля decorator.
+    get_proof_text()
+    # Выводим на экран/консоль.
+    return vb.task.get_solution()

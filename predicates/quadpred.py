@@ -38,7 +38,7 @@ class ort(Predicate):
                 for e in list(eps ^ phi):
                     pnt += e.lst
                 if prl(*pnt).confirm():
-                    add_string(vb.task.df, ['правило трёх прямых',
+                    add_string(['правило трёх прямых',
                                             f'две прямые {list(eps ^ phi)[0]}, {list(eps ^ phi)[1]} ортогональные {list(eps & phi)[0]} - параллельны между собой.',
                                             None, None, prl(*pnt)])
                 return 1
@@ -62,6 +62,9 @@ class prl(Predicate):  # Четыре точки, первые две и пос�
         return isinstance(other, prl) and set(self.sgm) == set(other.sgm)
 
     def transitive(self, other):
+        """
+        а) a || b, c || b => a || c
+        """
         if isinstance(other, type(self)):
             eps = set(self.sgm)
             phi = set(other.sgm)
@@ -71,9 +74,9 @@ class prl(Predicate):  # Четыре точки, первые две и пос�
                     pnt += e.lst
                 if prl(*pnt).confirm():
                     add_string(['правило транзитивности',
-                                            f'две прямые {list(eps ^ phi)[0]}, {list(eps ^ phi)[1]} параллельные {list(eps & phi)[0]} - параллельны между собой.',
-                                            [self, other], [find_fact(self), find_fact(other)],
-                                            prl(*pnt)])
+                                f'две прямые {list(eps ^ phi)[0]}, {list(eps ^ phi)[1]} параллельные {list(eps & phi)[0]} - параллельны между собой.',
+                                [self, other], [find_fact(self), find_fact(other)],
+                                prl(*pnt)])
                 return 1
         else:
             return 0
@@ -104,7 +107,11 @@ class eql(Predicate):  # Или отедльным предикатом-клас
             if len(list(eps & phi)) > 0:  # Нужна ли проверка на истинность? (см. eqa)
                 for e in list(eps ^ phi):
                     pnt += e.lst
-                eql(*pnt).confirm()
+                if eql(*pnt).confirm():
+                    # 'Правило', 'Описание', 'Предпосылки', 'Указатели на предпосылки', 'Факт'
+                    add_string(['Транзитивность для отрезков', f'два отрезка {list(eps ^ phi)[0]}, {list(eps ^ phi)[1]} равные с {list(eps & phi)[0]} - равны между собой.',
+                                [self, other], [find_fact(self), find_fact(other)],
+                                eql(*pnt)])
                 return 1
         else:
             return 0
