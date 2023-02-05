@@ -46,19 +46,6 @@ class Line:
         return hash(self.lst[0]) ^ hash(self.lst[1])
         # Line теперь не только из двух точек, но она применяется только при двухточечных Line при сравнении предикатов. Так что все нормально?
 
-    # def length(self):
-    #     # Length будет хранить всевозможные значения длины, выраженные через другие, а диагональный элемент хранит детерминированное значение длины.
-    #     # Пока мы не убедимся, что, например, possible состоит из одного детерм. элемента, мы не добавим на диаг элемент с помощью ф-ции Measure.
-    #     i = seg.index(str(self))
-    #     if RLM[i][i] != 0:
-    #         return RLM[i][i]
-    #     else:
-    #         possible = []
-    #         for j, p in enumerate(RLM[i]):
-    #             if p != 0 and RLM[j][j] != 0:  # целуемся с первым встречным и ретуреним. 1 может быть раньше 1/2
-    #                 possible.append(RLM[i][j] * RLM[j][j])
-    #         return possible
-
     def intersect(self, other):
         """
         Метод, обеспечивающий корректную работу предиката col(), который обобщает правило о:
@@ -72,7 +59,7 @@ class Line:
         if len(eps & phi) > 1:
             vb.task.lines.remove(self)
             vb.task.lines.remove(other)
-            # TODO убрать self и other, поскольку они уже не несут полезной информации.
+            # TODO опасное удаление self и other, поскольку они уже не несут полезной информации.
             # Это закомментировано, поскольку неизвестно, как lines будет применяться для вычислительного модуля.
             # Удаление может нарушить порядок индексов.
             Line(*list(eps | phi))  # Всякий раз, когда мы инициализируем линию, то она УЖЕ добавляется в список.
@@ -124,16 +111,16 @@ class Angle:
     def __eq__(self, other):
         return isinstance(other, type(self)) and set(self.sgm) == set(other.sgm)
 
-    def numerical(self):
-        vb.task.angle_dict[self] = None
+    # def numerical(self):
+    #     vb.task.angle_dict[self] = None
 
     def humanize(self):
         eps = set(self.sgm[0].lst)
         phi = set(self.sgm[1].lst)
         if len(list(eps & phi)) > 0:
-            a = list(eps-phi)[0]
+            a = list(eps - phi)[0]
             b = list(eps & phi)[0]
-            c = list(phi-eps)[0]
+            c = list(phi - eps)[0]
             return '∠' + a.n + b.n + c.n
         else:
             return self.name
@@ -155,7 +142,8 @@ class Angle:
         try:
             return vb.task.angle_dict[self]
         except KeyError:
-            print('Запрошенный угол не был создан.')
+            print(f'Величина угла {self.humanize()} неизвестна!')
+            vb.task.angle_dict[self] = None
             return None
 
 
@@ -180,3 +168,7 @@ class Triangle:
 
     def __eq__(self, other):
         return set(self.lst) == set(other.lst)  # set(self.sgm) == set(other.sgm)
+
+
+class Ratio:
+    pass

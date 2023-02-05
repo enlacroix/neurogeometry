@@ -25,18 +25,6 @@ class mdp(Predicate):
     def __eq__(self, other):
         return isinstance(other, mdp) and set(self.sgm) == set(other.sgm)
 
-    # TODO mdp передает данные в вычислительную матрицу.
-    # def count(self):
-    #     Z, X, Y = self.lst
-    #     a = seg_index(X, Y)
-    #     b = seg_index(Y, Z)
-    #     c = seg_index(X, Z)
-    #     if a is not None and b is not None and c is not None and self.bool:
-    #         RLM[a][b] = 2
-    #         RLM[a][c] = 2
-    #         RLM[b][a] = 1 / 2  # RLM[i][j] = 1 / RLM [j][i], where i != j.
-    #         RLM[c][a] = 1 / 2
-
     def __hash__(self):
         return hash(self.name)
 
@@ -47,13 +35,23 @@ class mdp(Predicate):
         return 0
 
 
-class cir(Predicate):  # Это предикат или элемент чертежа? Вот в чем вопрос.
+class cir(Predicate):  # Это предикат Вот в чем вопрос.
     def __init__(self, *lst):
         super().__init__(*lst)
         self.ttl = 'cir'
         self.name = self.ttl + self.name
         self.sgm = [lst[0], Curve(*lst[1:])]
         self.bool = self in vb.task.predicates
+        if self.bool: # можно сделать и через вызов метода confirm
+            points_on_the_circle = self.lst[1:]
+            center = self.lst[0]
+            for i in range(len(points_on_the_circle) - 1):
+                pred = eql(center, points_on_the_circle[i], center, points_on_the_circle[i + 1])
+                if pred.confirm():
+                    # 'Правило', 'Описание', 'Предпосылки', 'Указатели на предпосылки', 'Факт'
+                    add_string(['свойство радиусов одной окружности', 'это радиусы одной окружности', [self], [find_fact(self)], pred])
+
+
 
     def __eq__(self, other):
         return isinstance(other, type(self)) and set(self.sgm) == set(other.sgm)

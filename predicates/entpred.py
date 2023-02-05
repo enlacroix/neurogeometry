@@ -1,6 +1,7 @@
 from predicates.predmain import Predicate
 from entities import Angle, Triangle
 import varbank as vb
+from numerical.functors import Relation
 
 
 class eqa(Predicate):
@@ -11,10 +12,15 @@ class eqa(Predicate):
         self.ttl = 'eqa'
         self.name = self.ttl + self.name
         self.bool = self in vb.task.predicates
-        # nm.Relation(self.sgm[0], self.sgm[1], 1)
 
     def __eq__(self, other):
         return isinstance(other, eqa) and set(self.sgm) == set(other.sgm)
+
+    def numerize(self):
+        """
+        мускулистый мостик между предикатом и функтором отношения.
+        """
+        Relation(self.sgm[0], self.sgm[1], 1)
 
     def transitive(self, other):
         if isinstance(other, type(self)):
@@ -110,7 +116,8 @@ class etr(Predicate):
             eps = set(self.sgm)
             phi = set(other.sgm)
             pnt = []
-            if len(list(eps & phi)) > 0 and self.bool and other.bool:  # проверка на истинность может помешать тестам, когда мы не confirm() предикаты.
+            if len(list(
+                    eps & phi)) > 0 and self.bool and other.bool:  # проверка на истинность может помешать тестам, когда мы не confirm() предикаты.
                 for e in list(eps ^ phi):
                     pnt += e.lst
                 ctr(*pnt).confirm()

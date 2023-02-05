@@ -4,7 +4,7 @@ from external import str_list
 from numerical.functors import SetValue, Sum, Relation
 import varbank as vb
 from predicates.predmain import Predicate
-
+from objects import Quadrangle
 '''
 Мы импортируем все модули предикатов, чтобы eval их корректно распознал.
 '''

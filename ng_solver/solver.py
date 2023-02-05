@@ -63,4 +63,5 @@ def run_solver(text: list) -> str:
     # Генерируем текст доказательства, используем функцию из модуля decorator.
     get_proof_text()
     # Выводим на экран/консоль.
+    # print(vb.task.full_exploration())
     return vb.task.get_solution()

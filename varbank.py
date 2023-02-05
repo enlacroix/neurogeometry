@@ -2,10 +2,14 @@ import pandas as pd
 import sympy as sp
 import time
 import itertools as it
-
+from external import str_dict, hum_list
 
 # Количество переменных в одной задаче равно VAR_LIMIT - 1.
-VAR_LIMIT = 6
+VAR_LIMIT = 25
+
+
+# IndexError: list assignment index out of range - если такая штука, то поднимай VAR_LIMIT
+
 
 class Task:
     def __init__(self):
@@ -32,7 +36,7 @@ class Task:
         self.segment_dict = {}  # ключ: ОТРЕЗОК - только ДВЕ ТОЧКИ, значение: его длина, дефолт None
         # Блок 3. Хранение вычислительных матриц и векторов
         self.AEM = sp.Matrix()  # Angle Evaluation Matrix - хранение коэффицентов СЛУ для углов
-        self.prev_row_num = 0 # Параметр, который используется, для остановки избыточных расчётов.
+        self.prev_row_num = 0  # Параметр, который используется, для остановки избыточных расчётов.
 
     def reload(self):
         return self
@@ -44,9 +48,13 @@ class Task:
         """
         :return: решение задачи единой строкой с переносами строки в нужных местах.
         """
-        return '\n'.join(self.to_print) + f'\nЗадача была решена за {self.show_time()} секунд. Нейрогеометрия - качество и точка.'
+        return '\n'.join(
+            self.to_print) + f'\nЗадача была решена за {self.show_time()} секунд. Нейрогеометрия - качество и точка.'
 
     def load_statement(self):
+        """
+        альтернативная возможность загрузки условия в Task.
+        """
         pass
 
     def post_processing(self):  # словарь сделан, но ты от него отказался
@@ -57,8 +65,17 @@ class Task:
         2) аксиоматика для предикатов, которые утверждают о том, что точки принадлежат одной линии. Подробнее об этом можно прочитать в методе intersect()
         ВНИМАНИЕ: TRANSITIVE работает с предикатами, которые имеют ОДИНАКОВЫЙ тип. Т.е. prl ^ ort не обрабатываются!
         """
+        '''
+        Эта реализация даёт лишних 0.6 секунд выполнения программы из-за громоздкости. 
+        boss = self.predicates_to_dict()
+        for ttl in boss.keys():
+            if ttl in ['eql', 'prl', 'ort']:
+                for pair in it.combinations(boss[ttl], 2):
+                    pair[0].transitive(pair[1])
+        '''
         for p in it.combinations(self.predicates, 2):
-            if p[0].ttl in ['eql', 'prl', 'ort'] and p[1].ttl in ['eql', 'prl', 'ort']:  # isinstance, но придётся импортировать
+            white_list = ['eql', 'prl', 'ort', 'eqa']
+            if p[0].ttl in white_list and p[1].ttl in white_list:  # isinstance, но придётся импортировать
                 p[0].transitive(p[1])
         # Для правильной работы col и cyl.
         # TODO Воможный источник гадостей по типу бесконечной или очень долгого выполнения. На данный момент починено, но пусть пока будет "на карандаше"
@@ -67,6 +84,20 @@ class Task:
         for ln in it.combinations(self.curves, 2):
             ln[0].intersect(ln[1])
         return 0
+
+    def full_exploration(self) -> str:
+        """
+        Пользователь можно отдельно запросить "Полное исследование", для этого в config нужно поставить only_question = False.
+        :return: строка, в которой отражены Все найденные соотношения между геометрическими объектами (не только нужные для построения решения).
+        """
+        boss = self.predicates_to_dict()
+        report = 'Обнаруженные закономерности: \n'
+        for key in boss.keys():
+            if key in ['col',
+                       'cyl']:  # Слишком нудно выводить это. Уж слишком мал запрос в обществе на подобный контент.
+                continue
+            report += ', '.join(hum_list(boss[key])) + ';\n'
+        return report
 
     def predicates_to_dict(self) -> dict:
         """
@@ -77,7 +108,7 @@ class Task:
         titles = [x.ttl for x in self.predicates]
         d = dict.fromkeys(titles)
         for k in d.keys():
-            d[k] = []
+            d[k] = []  # Каждому ключу нужно поставить УНИКАЛЬНЫЙ список со своим id.
         for t in d.keys():
             for p in self.predicates:
                 if p.ttl == t:
@@ -88,4 +119,3 @@ class Task:
 
 
 task = Task()
-# Количество допустимых переменных.

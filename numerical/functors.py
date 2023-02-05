@@ -45,7 +45,7 @@ class Sum:
         for elem in objects:
             x_row[elem.get_ind()] = 1
         x_row[-1] = res
-        if angles:
+        if angles:  # isinstance(objects[0], Angle)
             vb.task.AEM = vb.task.AEM.row_insert(1, sp.Matrix([x_row]))
         else:
             # То же самое для матрицы отрезков.

@@ -1,5 +1,15 @@
+from predicates.freepred import col
+
+
 class Quadrangle:
-    pass
+    def __init__(self, *lst):
+        self.lst = lst
+        A, B, C, D = self.lst
+        col(A, B).confirm()
+        col(B, C).confirm()
+        col(C, D).confirm()
+        col(D, A).confirm()
+
 
 
 class Parallelogram(Quadrangle):

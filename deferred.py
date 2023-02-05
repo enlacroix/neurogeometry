@@ -184,3 +184,16 @@ def initial_explore(n):
 # RLM = np.zeros((len(seg), len(seg)))
 # # relation_length_matrix. Возможно стоит поставить 100 на 100, чтобы не париться с IndexError.
 # RAM = np.zeros((len(seg), len(seg)))
+
+# def length(self):
+    #     # Length будет хранить всевозможные значения длины, выраженные через другие, а диагональный элемент хранит детерминированное значение длины.
+    #     # Пока мы не убедимся, что, например, possible состоит из одного детерм. элемента, мы не добавим на диаг элемент с помощью ф-ции Measure.
+    #     i = seg.index(str(self))
+    #     if RLM[i][i] != 0:
+    #         return RLM[i][i]
+    #     else:
+    #         possible = []
+    #         for j, p in enumerate(RLM[i]):
+    #             if p != 0 and RLM[j][j] != 0:  # целуемся с первым встречным и ретуреним. 1 может быть раньше 1/2
+    #                 possible.append(RLM[i][j] * RLM[j][j])
+    #         return possible
