@@ -1,5 +1,6 @@
 from predicates.predmain import Predicate
-from entities import Angle, Triangle
+from entities import Angle
+from objects import Triangle
 import varbank as vb
 from numerical.functors import Relation
 

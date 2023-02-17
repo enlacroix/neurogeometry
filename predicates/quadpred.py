@@ -1,4 +1,5 @@
 from decoration.printer import add_string, find_fact
+from numerical.functors import Relation, SetValue
 from predicates.predmain import Predicate
 from entities import Line
 import varbank as vb
@@ -48,6 +49,14 @@ class ort(Predicate):
     def humanize(self):
         return f'{self.sgm[0]}⟂{self.sgm[1]}'
 
+    def numerize(self):
+        """
+        ort: угол между компонирующими линиями равен 90 градусов.
+        """
+        agl = self.sgm[0].angle_between(self.sgm[1])
+        if agl:
+            SetValue(agl, 90)
+
 
 class prl(Predicate):  # Четыре точки, первые две и последние две из них обозначают прямые, которые параллельны.
     def __init__(self, *points):
@@ -85,6 +94,7 @@ class prl(Predicate):  # Четыре точки, первые две и пос�
         return f'{self.sgm[0]}∥{self.sgm[1]}'
 
 
+
 class eql(Predicate):  # Или отедльным предикатом-класс для равных уже отрезков?
     def __init__(self, *points):
         super().__init__(*points)
@@ -118,3 +128,9 @@ class eql(Predicate):  # Или отедльным предикатом-клас
 
     def humanize(self):
         return f'{self.sgm[0]}={self.sgm[1]}'
+
+    def numerize(self):
+        """
+        eql уведомляет вычислительный модуль о том, что длины отрезков одинаковы.
+        """
+        Relation(self.sgm[0], self.sgm[1], 1)

@@ -1,8 +1,9 @@
 import varbank as vb
 from random import choice, randint
 import config as cf
+from external import logger
 
-funny_phrases = ['Очевидно. ', 'Нетрудно заметить, что ', 'Легко видеть: ', 'Каждый советский школьник знал, что ']
+funny_phrases = ['Очевидно. ', 'Нетрудно заметить, что ', 'Легко видеть: ']
 
 
 def get_premises(index):
@@ -57,6 +58,7 @@ def find_fact(fact_name):
         return vb.task.df['Факт'][vb.task.df['Факт'] == fact_name].index[0]
     except IndexError:
         print(f'{fact_name.humanize()} не найден!')
+        return False
 
 
 printed = []
@@ -76,8 +78,11 @@ def f(node):
 
 
 def get_proof_text():
-    print(vb.task.df)
+    logger(vb.task.df)
     start = find_fact(vb.task.question)
+    if not start:
+        send(f'Программе не удалось доказать, что {vb.task.question.humanize()}...')
+        return
     send(f'Докажем, что {vb.task.question.humanize()}, используя {get_rule(start)}.')
     f(start)
     send('Что и требовалось доказать.')

@@ -21,6 +21,10 @@ problems_dict = {
         'Triangle(A, B, C); ort(A, C, C, B); mdp(M, A, B); col(C, M); col(E, C, B); col(M, E); mdp(E, C, B)',
         'ort(M, E, B, C)'
         ],
+    4: [
+        'Triangle(A, B, C); SetValue(Line(A, M), 4); Relation(Line(A, M), Line(A, B), 2); Sum((Line(A, B), Line(A, C), Line(B, C)), 12); mdp(M, A, C)',
+        'ort(B, M, A, C)'
+        ],
 
 }
 
@@ -35,3 +39,4 @@ def demo(number: int):
     except KeyError:
         print('Введён неверный номер задачи!')
         return -1
+

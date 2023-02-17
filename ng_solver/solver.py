@@ -1,13 +1,13 @@
 from decoration.printer import get_proof_text
-from external import str_list, hum_list
+from external import str_list, hum_list, logger
 from ng_solver.rules import Rules
 from inspect import signature
 import config as cf
 import varbank as vb
 import itertools as it
 
-# TODO print() заменить на log(), функция, отмечающая технические моменты, которые можно запросить с веб-приложения. Но это не точно.
-from numerical.numodule import evaluate_angles
+
+from numerical.numodule import evaluate_angles, evaluate_segments
 from statement import read_task
 
 
@@ -23,26 +23,28 @@ def proof():
     prev_size = len(vb.task.statement)
     while True:
         evaluate_angles()
+        evaluate_segments()
         for i, R in enumerate(Rules):
-            print(f'Идёт обработка правила {i + 1}...')
+            logger(f'Идёт обработка правила {i + 1}...')
             for predcomb in it.combinations(vb.task.predicates, len(signature(R).parameters)):
                 # Хотя бы один предикат из комбинации должен быть получен на предыдущей итерации, иначе эта комбинация предикатов не рассматривается.
                 # Этот пункт спасает полное исследование, снижая время в два раза.
                 if any([u not in prev_predicates for u in predcomb]):
                     if R(*predcomb):  # если успешно сработало, то возвращается 1.
-                        print('Предикаты:\n', str_list(vb.task.predicates))
+                        logger(f'Предикаты:\n {str_list(vb.task.predicates)}')
             vb.task.post_processing()
-        print(f'Итерация {rnd} завершена.')
+        logger(f'Итерация {rnd} завершена.')
         rnd += 1
-        print(
+        logger(
             f'Размер предикатного массива. Предыдущая итерация: {prev_size}, Текущая: {len(vb.task.predicates)}, Прирост: {len(vb.task.predicates) - prev_size}')
         if prev_size == len(vb.task.predicates) or (cf.only_question and vb.task.question) or rnd > cf.supremum:
-            print('Формирование датафрейма завершено.')
+            logger('Формирование датафрейма завершено.')
             break
         else:
             prev_size = len(vb.task.predicates)
             prev_predicates = vb.task.predicates
-    vb.task.df.to_csv('resources/geom.csv', encoding='utf-8')
+    if cf.dev_mode:
+        vb.task.df.to_csv('resources/geom.csv', encoding='utf-8')
     return 0
 
 
@@ -53,7 +55,7 @@ def run_solver(text: list) -> str:
     :return: текст решения единой строкой.
     """
     # Создаем "пустой" новый объект класса Task, когда запускаем процесс решения.
-    vb.task = vb.Task()  # TODO Сюда бы отдельный метод для создания и обнуления списков, поскольку у меня нервный тик от скрытой инициализации Task(), которая очищает
+    vb.task = vb.Task.getInstance() # TODO Сюда бы отдельный метод для создания и обнуления списков, поскольку у меня нервный тик от скрытой инициализации Task(), которая очищает
     # датафреймы и предикаты. Пусть в __init__ лежит что-то незначительное.
     # Переводим условие на предикатный язык.
     statement, question = text
@@ -64,4 +66,6 @@ def run_solver(text: list) -> str:
     get_proof_text()
     # Выводим на экран/консоль.
     # print(vb.task.full_exploration())
-    return vb.task.get_solution()
+    sol_text = vb.task.get_solution()
+    vb.Task.reload()
+    return sol_text

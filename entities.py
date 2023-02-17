@@ -1,6 +1,5 @@
 import varbank as vb
-from external import stringify_list, str_list
-from numerical.functors import Sum
+from external import stringify_list, str_list, logger
 
 
 class Point:
@@ -26,21 +25,60 @@ class Point:
 class Line:
     def __init__(self, *lst):
         self.lst = lst
-        if self not in vb.task.lines:
+        self.name = ''.join(sorted([p.n for p in self.lst]))
+        if self.lst[0] != self.lst[1] and self not in vb.task.lines:
             vb.task.lines.append(self)
+            if len(self.lst) == 2 and self not in vb.task.segments:
+                vb.task.segments.append(self)
+
+    def get_ind(self):
+        try:
+            return vb.task.segments.index(self)
+        except IndexError:
+            logger(f'Попытка получить несуществующий индекс отрезка {self}!')
+            return
+
+    def get_value(self):
+        try:
+            return vb.task.segment_dict[self]
+        except KeyError:
+            logger(f'Был проинициализирован отрезок {self} пустым значением!')
+            vb.task.segment_dict[self] = None
+            return
 
     def __str__(self):
-        name = ''
-        for p in self.lst:
-            if p is not None:
-                name += p.n
-        return ''.join(sorted(name))
+        return ''.join(self.name)
+
+    def humanize(self):
+        return 'пр. ' + str(self)
 
     def __eq__(self, other):
         return set(self.lst) == set(other.lst)
 
+    def angle_between(self, other):
+        """
+        TODO перенести в отрезки.
+        Метод принимает два отрезка (т.е. ровно две точки с ровно одним совпадающей точкой в названии), который возвращает объект
+        угла между ними.
+        """
+        eps = set(self.lst)
+        phi = set(other.lst)
+        if len(list(eps & phi)) == 1:
+            return Angle(list(eps - phi)[0], list(eps & phi)[0], list(eps & phi)[0], list(phi - eps)[0])
+        else:
+            return False
+
     def __contains__(self, item):
         return item in self.lst
+
+    def is_reachable(self):
+        """
+        return: или True (RC = 0) или значение RC (RC > 0).
+        """
+        if self.get_value():
+            return True
+        else:
+            pass
 
     def __hash__(self):
         return hash(self.lst[0]) ^ hash(self.lst[1])
@@ -68,10 +106,10 @@ class Line:
             return Point(str(*list(eps & phi)))  # Единственная точка пересечения двух прямых
 
 
-class Segment(Line):
-    '''
+class Segment:
+    """
     класс, предназначенный для нумерикал модуля. У Segment уже есть понятие о длине.
-    '''
+    """
     pass
 
 
@@ -117,7 +155,7 @@ class Angle:
     def humanize(self):
         eps = set(self.sgm[0].lst)
         phi = set(self.sgm[1].lst)
-        if len(list(eps & phi)) > 0:
+        if len(list(eps & phi)) == 1:
             a = list(eps - phi)[0]
             b = list(eps & phi)[0]
             c = list(phi - eps)[0]
@@ -144,31 +182,23 @@ class Angle:
         except KeyError:
             print(f'Величина угла {self.humanize()} неизвестна!')
             vb.task.angle_dict[self] = None
-            return None
+            return
 
-
-class Triangle:
-    def __init__(self, *lst):
-        self.lst = lst
-        X, Y, Z = self.lst
-        self.segments = [Line(X, Y), Line(X, Z), Line(Y, Z)]
-        self.angles = [Angle(X, Y, X, Z), Angle(X, Z, Y, Z), Angle(Y, Z, Y, X)]
-        Sum(self.angles, 180)
-        self.name = f'Треугольник {X.n + Y.n + Z.n}'
-        # TODO Инициализация col от Line. Вызывает циркулярный импорт. Поправить, иначе смысла в Triangle немного
-        # col(X, Y).confirm()
-        # col(X, Z).confirm()
-        # col(Z, Y).confirm()
-
-    def __str__(self):
-        return self.name
-
-    def __hash__(self):
-        return hash(self.segments[0]) ^ hash(self.segments[1]) ^ hash(self.segments[2])
-
-    def __eq__(self, other):
-        return set(self.lst) == set(other.lst)  # set(self.sgm) == set(other.sgm)
+    def is_reachable(self):
+        """
+        Достижимо ли значение угла (как пример). Пояснение: если мы знаем его величину из словаря, то она очевидно достижима.
+        Иначе, если мы знаем значение тригонометрической функции, то через 1 действие мы можем найти этот угол.
+        Коэффициент достижимости (Reachable Coefficient, далее RC) равен 1.
+        return: или True (RC = 0) или значение RC (RC > 0).
+        """
+        if self.get_value():
+            return True
+        else:
+            pass
 
 
 class Ratio:
+    """
+    Отношение между двумя величинами (отрезки/углы/площади). Применяются в теоремах про подобные треугольники.
+    """
     pass

@@ -1,4 +1,6 @@
 from decoration.printer import add_string, find_fact
+from external import str_list
+from numerical.functors import Relation
 from predicates.predmain import Predicate
 from predicates.quadpred import eql
 from predicates.freepred import col
@@ -15,12 +17,6 @@ class mdp(Predicate):
         self.sgm = [Z, Line(X, Y)]
         self.name = self.ttl + self.name
         self.bool = self in vb.task.predicates
-        if self.bool:
-            pred = eql(X, Z, Y, Z)
-            if pred.confirm():
-                # 'Правило', 'Описание', 'Предпосылки', 'Указатели на предпосылки', 'Факт'
-                add_string(['Свойство середины', 'точка делит отрезок пополам', [self], [find_fact(self)], pred])
-            col(Z, X, Y).confirm()
 
     def __eq__(self, other):
         return isinstance(other, mdp) and set(self.sgm) == set(other.sgm)
@@ -28,8 +24,24 @@ class mdp(Predicate):
     def __hash__(self):
         return hash(self.name)
 
+    def confirm(self):
+        res = Predicate.confirm(self)
+        if res:
+            Z, X, Y = self.lst
+            pred = eql(X, Z, Y, Z)
+            if pred.confirm():
+                add_string(['Свойство середины', 'точка делит отрезок пополам', [self], [find_fact(self)], pred])
+            col(Z, X, Y).confirm()
+        return res
+
     def humanize(self):
         return f'{self.sgm[0]} - середина отрезка {self.sgm[1]}'
+
+    def numerize(self):
+        """
+        Z - середина ХУ. ХУ / ZX = 2
+        """
+        Relation(self.sgm[1], Line(self.lst[0], self.lst[1]), 2)
 
     def __mul__(self, other):
         return 0

@@ -1,5 +1,6 @@
 from decoration.printer import add_string
-from entities import Point, Triangle, Angle
+from entities import Point, Angle, Line
+from objects import Triangle
 from external import str_list
 from numerical.functors import SetValue, Sum, Relation
 import varbank as vb
@@ -29,7 +30,7 @@ def reading_points(string: str):
 # TODO Жуткий кошмарный костыль.
 # Пользователю нужный каждый раз залезать в файл, чтобы добавить/убрать точки. Либо иниц весь английский алфавит (у нас же нет перебора точек больше)
 # может ли и здесь помочь eval?
-A, B, C, D, E, M, F, K, H, P = reading_points('A, B, C, D, E, M, F, K, H, P')
+A, B, C, D, E, M, F, K, H, P, O = reading_points('A, B, C, D, E, M, F, K, H, P, O')
 
 
 def read_task(predicates_listing, question_str):
@@ -47,8 +48,8 @@ def read_task(predicates_listing, question_str):
             continue
         if isinstance(pred, Predicate):
             vb.task.statement.append(pred)
-            pred.confirm()
             add_string([None, 'это известно из условия.', None, None, pred])
+            pred.confirm()
     vb.task.question = eval(question_str)
 
 

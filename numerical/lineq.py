@@ -17,7 +17,7 @@ class LinearEquationsSystem:
 
     def __init__(self, matrix: sp.Matrix):
         self.matrix = matrix
-        self.var_num = sp.shape(matrix)[1] - 1
+        self.var_num = max(0, sp.shape(matrix)[1] - 1)
 
     def solve(self, geom_mode=False, print_answer=False):
         """
@@ -25,6 +25,8 @@ class LinearEquationsSystem:
         На вход подается дополненная матрица (А|b), т.е. содержащая в себе столбец значений b.
         Возвращает list.
         """
+        if self.var_num == 0:
+            return []
         # Nullspace у нас это ядро пространства столбцов матрицы коэффициентов (без последнего столбца)
         space = self.matrix[:, :-1].nullspace()
         # Приводим матрицу к главному ступенчатому виду, pivot содержат номера тех столбцов, которые содержат базисные переменные.

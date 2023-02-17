@@ -1,19 +1,21 @@
 from ng_solver.solver import run_solver
 import numpy as np
-from resources.problems import demo
+from resources.problems import demo, problems_dict
 
 np.warnings.filterwarnings('ignore', category=np.VisibleDeprecationWarning)
 
-# N - номер задачи, которую вы хотите решить из подготовленного демонабора. С ним можно ознакомиться в файле problems.py из папки resources.
-N = 2
+
+def go_tests():
+    """
+    Функция для быстрого тестирования всех задач.
+    """
+    for value in problems_dict.values():
+        print(run_solver(value))
+
+
+'''
+N - номер задачи, которую вы хотите решить из подготовленного демонабора.
+С ним можно ознакомиться в файле problems.py из папки resources.
+'''
+N = 1
 print(run_solver(demo(N)))
-
-
-'''
-Имитация непрерывного ввода данных с сайта. Задачи корректно обрабатываются в одном "запуске". 
-while True:
-    N = int(input())
-    if demo(N) == -1:
-        break
-    print(run_solver(demo(N)))
-'''
