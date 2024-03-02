@@ -1,0 +1,24 @@
+server {
+        listen 80;
+        server_name neurogeometry.ru;
+        return 301 https://$server_name$request_uri;
+
+}
+server {
+        listen 443 ssl;
+        server_name neurogeometry.ru;
+
+        ssl_certificate /etc/ssl/private/nginx.neurogeometry.ru.crt;
+        ssl_certificate_key /etc/ssl/private/nginx.neurogeometry.ru.key;
+
+        location = /favicon.ico { access_log off; log_not_found off; }
+
+        location / {
+                include proxy_params;
+                proxy_pass http://unix:/run/gunicorn.sock;
+        }
+
+        location /static/ {
+                root /home/proga/nproject/WEBService;
+        }
+}

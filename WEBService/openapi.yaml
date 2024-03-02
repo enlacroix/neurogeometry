@@ -1,0 +1,108 @@
+openapi: 3.0.3
+info:
+  title: Neurogeomtry
+  description: OpenAPI of Neurogeomtry project. It's A website for solving geometry problems from the planimetry section. The backend is written on the Django framework, the frontend is made on VUE JS. Queries are executed using Axios.
+  contact:
+    email: kamikhaylov@edu.hse.ru
+  version: 0.1.0
+servers:
+  - url: http://localhost:8080
+
+paths:
+  /:
+     get:
+      summary: Redirect to main page
+      description: Redirection to main page
+      responses:
+        '301':
+          description: Redirection to /v1
+  /v1:
+    get:
+      summary: The main page of the website
+      description: The main page of the website
+      responses:
+        '200':
+          description: OK
+  /v1/try:
+    post:
+      summary: Solve the task
+      description: Request ot solve the task
+      parameters:
+        - in: query
+          name: solve_request
+          schema:
+            $ref: "#/components/schemas/solve_request"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/solve_response"
+
+components:
+  schemas:
+    solve_request:
+      type: object
+      properties:
+        task_data:
+          description: Object with task data
+          type: object
+          properties:
+            condition:
+              description: Condition of the task to solve
+              type: string
+            question:
+              description: Question of the task to solve
+              type: string
+            linear_angles:
+              description: Additional inforamtion for solve-model
+              type: string
+        settings:
+          description: Settings for solve-model
+          type: object
+          properties:
+            is_full_searching:
+              description: Make full searching for task
+              type: boolean
+            variables_limit:
+              description: Max amount of available varibles in one task
+              type: integer
+            max_iter_amount:
+              description: Mask number of iteration in one task
+              type: integer
+            use_linear_angle_method:
+              description: Use special mode for input linear angles in task
+              type: boolean
+    solve_response:
+      type: object
+      properties:
+        task_data:
+          description: Object with response from server to task data
+          type: object
+          properties:
+            answer:
+              description: Simple answer to the task
+              type: string
+            answer_full:
+              description: Full answer to the task
+              type: string
+            error_message:
+              description: It contains a machine-readable error code if it occurs
+              type: string
+            error_dict:
+              description: Detailed information about errors in syntax of the request
+              type: object
+              properties:
+                where:
+                  description: Shows in which field the error was made
+                  type: string
+                command:
+                  description: Shows in which command the error was made
+                  type: string
+                typeof:
+                  description: Type of error
+                  type: string
+                correction:
+                  description: Clarification of what exactly is the error
+                  type: string

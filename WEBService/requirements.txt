@@ -1,0 +1,12 @@
+Django==4.0.6
+djangorestframework~=3.14.0
+django-cors-headers==3.13.0
+djoser
+djangorestframework-simplejwt
+poster3
+scipy
+numpy==1.23.1
+pandas
+streamlit
+sympy
+gunicorn

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Нейрогеометрия</title>
+
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="icons/favicon/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+</head>
+<body>
+
+<div id="app">
+
+</div>
+
+</body>
+</html>
+
+
+{% extends '_base.html' %}
+{% block html %}
+<html lang="ru">
+  <head>
+      {% block head %}{{ block.super }}{% endblock %}
+    <link rel="icon" href="<%= BASE_URL %>favicon.ico">
+    <title>Нейрогеометрия</title>
+
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="icons/favicon/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+  </head>
+  <body>
+  {% block body %}
+  {{ block.super }}
+    <div id="app"></div>
+  {% endblock body%}
+  </body>
+</html>
+{% endblock html%}
